@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using static System.Console;
+using System.IO;
 
 namespace Airplane_exam
 {
@@ -8,7 +13,8 @@ namespace Airplane_exam
 
     class Airplane
     {
-
+        string fPath = "Black_Box.txt";
+        string str;
         protected int speed;
         public int Myspeed
         {
@@ -32,11 +38,16 @@ namespace Airplane_exam
 
         public void Flight_correction(int speed, int height)
         {
+
             SetCursorPosition(0, 0);
             WriteLine("***********************************************************");
-            WriteLine($"скорость самолёта составляет {speed} км*ч высота {height} км");
+            Write(str = $"скорость самолёта составляет {speed} км*ч высота {height} км\n");
             WriteLine("***********************************************************");
-
+            using (FileStream fs = new FileStream(fPath, FileMode.Append, FileAccess.Write, FileShare.Write))
+            {
+                byte[] str_byte = Encoding.UTF8.GetBytes(str);
+                fs.Write(str_byte, 0, str_byte.Length);
+            }
         }
 
         public void Points_penal(int recomend_heidht, int height, int height_comparison)
@@ -44,25 +55,30 @@ namespace Airplane_exam
             SetCursorPosition(0, 5);
             if (recomend_heidht != height && height_comparison > 300 && height_comparison <= 600)
             {
-                WriteLine($"Штрафные баллы - {points += 25}");
+                Write(str = $"Штрафные баллы - {points += 25}\n");
                 WriteLine("***********************************************************");
 
             }
             else if (recomend_heidht != height && height_comparison > 600 && height_comparison < 1000)
             {
-                WriteLine($"Штрафные баллы - {points += 50}");
+                Write(str = $"Штрафные баллы - {points += 50}\n");
                 WriteLine("***********************************************************");
             }
             try
             {
                 if (points > 1000)
-                    throw new Exception("Непригоден к полетам, вы набрали штафных баллов более 1000");
+                    throw new Exception(str = "Непригоден к полетам, вы набрали штафных баллов более 1000");
             }
             catch (Exception ex)
             {
                 Clear();
                 WriteLine(ex.Message);
                 Environment.Exit(0);
+            }
+            using (FileStream fs = new FileStream(fPath, FileMode.Append, FileAccess.Write, FileShare.Write))
+            {
+                byte[] str_byte = Encoding.UTF8.GetBytes(str);
+                fs.Write(str_byte, 0, str_byte.Length);
             }
         }
 
@@ -77,15 +93,20 @@ namespace Airplane_exam
             try
             {
                 if (height > 1000)
-                    throw new Exception("Непригоден к полетам, вы набрали недопустимую высоту");
+                    throw new Exception(str = "Непригоден к полетам, вы набрали недопустимую высоту");
                 if (height_comparison > 1300)
-                    throw new Exception("Самолет разбился, разница между рекомендуемой и текущей высотой более 1300 км");
+                    throw new Exception(str = "Самолет разбился, разница между рекомендуемой и текущей высотой более 1300 км");
             }
             catch (Exception ex)
             {
                 Clear();
                 WriteLine(ex.Message);
                 Environment.Exit(0);
+            }
+            using (FileStream fs = new FileStream(fPath, FileMode.Append, FileAccess.Write, FileShare.Write))
+            {
+                byte[] str_byte = Encoding.UTF8.GetBytes(str);
+                fs.Write(str_byte, 0, str_byte.Length);
             }
         }
 
@@ -131,7 +152,7 @@ namespace Airplane_exam
                 Environment.Exit(0);
             }
         }
-       
+
     }
 
     internal class Program
@@ -142,7 +163,8 @@ namespace Airplane_exam
             BackgroundColor = ConsoleColor.White;
             ForegroundColor = ConsoleColor.DarkBlue;
             Clear();
-
+            string fPath = "Black_Box.txt";
+            string str;
             int height = 0, speed = 0, distance = 0, points = 0, points2 = 0, height_comparison = 0, recomend_heidht = 0;
             Random random = new Random();
             //корректировка погодных условий 
@@ -342,7 +364,7 @@ namespace Airplane_exam
                                 height_comparison*=-1;
 
                             air.Penalty_points_height(air.Myheight, height_comparison);
-                                                       
+
                             distance += 50;
                             y-=2;
                         }
@@ -454,7 +476,7 @@ namespace Airplane_exam
                         {
                             air.Myheight += 150;
                             dispatcher2.Flight_correction(air.Myspeed, air.Myheight);
-                            y-=2;;
+                            y-=2; ;
                         }
                         break;
                     case ConsoleKey.DownArrow:
@@ -466,7 +488,7 @@ namespace Airplane_exam
                                 WriteLine("Вы уже на земле, снижайте скорость");
                                 air.Myheight = 0;
                             }
-                            else 
+                            else
                                 dispatcher2.Flight_correction(air.Myspeed, air.Myheight);
                             y+=2;
                         }
@@ -500,11 +522,34 @@ namespace Airplane_exam
             } while (air.Myspeed > 0 && air.Myheight > 0);
             Clear();
             WriteLine("******************************************************");
-            WriteLine("Программа «Тренажер пилота самолета» завершена успешно");
-            WriteLine($"Диспетчер {name1} начислил(а) {points} штрафных баллов");
-            WriteLine($"Диспетчер {name2} начислил(а) {points2 - points} штрафных баллов");
+            WriteLine(str = "Программа «Тренажер пилота самолета» завершена успешно");
+            WriteLine(str = $"Диспетчер {name1} начислил(а) {points} штрафных баллов");
+            WriteLine(str = $"Диспетчер {name2} начислил(а) {points2 - points} штрафных баллов");
             WriteLine("******************************************************");
+            using (FileStream fs = new FileStream(fPath, FileMode.Append, FileAccess.Write, FileShare.Write))
+            {
+                byte[] str_byte = Encoding.UTF8.GetBytes(str);
+                fs.Write(str_byte, 0, str_byte.Length);
+            }
+            
+            WriteLine("\n\nЕсли хотите Открыть черный ящик нажмите 1");
+            short key_box = short.Parse(Console.ReadLine());
 
+            if (key_box == 1)
+            {
+                Clear();
+                using (FileStream fs = new FileStream(fPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    byte[] str_byte = new byte[(int)fs.Length];
+                    fs.Read(str_byte, 0, str_byte.Length);
+                    string str_new = Encoding.UTF8.GetString(str_byte);
+                    WriteLine(str_new);
+                }
+            }
+            else
+                Environment.Exit(0);
+
+          
         }
     }
 }
